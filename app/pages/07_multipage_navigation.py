@@ -5,8 +5,8 @@ st.title("Multi-Page Apps and Navigation")
 st.markdown(
     """
 ### File-Based Multipage Routing
-Use descriptive filenames in `app/pages/`:
-- Names become sidebar page labels.
+Use numbered filenames in `app/pages/`:
+- Prefixes like `01_`, `02_` control sidebar order.
 - Underscores become spaces in page labels.
 - Session state is shared across pages.
 """
@@ -29,6 +29,6 @@ st.header("Programmatic Navigation")
 st.info("If your Streamlit version supports it, this button switches to another page.")
 if st.button("Go to Data Visualization Page"):
     try:
-        st.switch_page("app/pages/data_visualization.py")
+        st.switch_page("app/pages/05_data_visualization.py")
     except Exception as exc:
         st.error(f"switch_page unavailable or path mismatch: {exc}")
