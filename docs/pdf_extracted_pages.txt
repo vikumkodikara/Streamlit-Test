@@ -1,0 +1,1532 @@
+
+
+===== PAGE 1 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 1 of 33
+LECTURE NOTES
+Streamlit Development
+From Basics to Deployment
+IT41043 — Intelligent Systems
+Faculty of IT  |  Horizon Campus  |  Academic Year 2026
+Third Year — Second Semester
+Lecturer: Isuru Madusanka Samarappulige
+Streamlit Version: 1.56.0  |  Python 3.11+
+Course Overview
+Session Topic Key Concepts
+1 Introduction & Setup What is Streamlit, execution model, virtual environment, 
+project structure
+2 Text & Display Elements st.write, markdown, metrics, code blocks, LaTeX, 
+notifications
+3 Input Widgets Text, numbers, sliders, selectors, buttons, file upload
+4 Layouts & Containers Columns, sidebar, tabs, expanders, progress indicators
+5 Data & Visualisation DataFrames, Matplotlib, Seaborn, Plotly, images, video
+6 Session State & Forms Re-run model, session_state, callbacks, forms
+7 Multi-Page Apps pages/ directory, routing, shared state, navigation
+8 Caching & Performance cache_data, cache_resource, TTL, cache invalidation
+9 AI/ML Integration Scikit-learn, TensorFlow, HuggingFace, chatbot UI
+10 Deployment Community Cloud, Render, Docker, secrets management
+
+
+===== PAGE 2 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 2 of 33
+1. Introduction to Streamlit
+Streamlit  is  an  open-source  Python  framework  that  lets  data  scientists,  AI/ML  engineers,  and 
+researchers turn Python scripts into interactive web applications in minutes — with no front-end or  
+web development knowledge required. It follows a pure-Python, script-first philosophy: you write top-
+to-bottom Python, and Streamlit renders it as a live, reactive web app automatically.
+For Final Year Projects (FYP), Streamlit is the ideal Proof-of-Concept (PoC) tool because it bridges  
+the gap between a trained machine learning model, a data analysis pipeline, or an AI system and a  
+demonstrable,  interactive  interface  that  supervisors,  examiners,  and  industry  partners  can  
+immediately use and evaluate.
+1.1 Why Streamlit for Your FYP PoC?
+Criterion Traditional Web App Streamlit PoC
+Development Time Weeks (HTML/CSS/JS + backend) Hours (pure Python)
+Required Skills Full-stack knowledge Python only
+ML/AI Integration Manual API wiring Direct function calls
+Iteration Speed Slow (rebuild/redeploy) Instant (hot-reload)
+Deployment Complex DevOps setup One command / free hosting
+Examiner Demo Requires server setup Share a URL
+1.2 How Streamlit Works — The Execution Model
+Understanding Streamlit's execution model is essential. Every time a user interacts with a widget  
+(clicks a button, moves a slider), Streamlit re-runs the entire script from top to bottom. This is  
+intentional and keeps the app reactive.
+# Every interaction re-runs this entire file
+import streamlit as st
+ 
+st.title('My FYP Demo')          # Rendered on every run
+name = st.text_input('Your name')  # Widget — triggers re-run on change
+st.write(f'Hello, {name}!')       # Shows updated output immediately
+Key Concept: Re-run Model
+Streamlit is NOT event-driven like React or Flask. The full script runs on EVERY interaction.
+Use st.cache_data / st.cache_resource to avoid recomputing expensive operations on every 
+run.
+Use st.session_state to preserve values across re-runs (covered in Session 7).
+1.3 Version Used in This Course
+This tutorial uses Streamlit 1.56.0. Install it with:
+
+
+===== PAGE 3 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 3 of 33
+pip install streamlit==1.56.0
+ 
+# Verify installation
+streamlit --version
+# Expected output: Streamlit 1.56.0
+ 
+# Run any app
+streamlit run app.py
+1.4 Streamlit Architecture Overview
+Layer Component Description
+Browser Frontend (React) Auto-generated UI; served by Streamlit server
+Server Tornado/asyncio Manages WebSocket connections and script execution
+Script Your Python file The only file you write — runs on each interaction
+Data Layer Python environment Pandas, NumPy, scikit-learn, TensorFlow — all usable 
+directly
+
+
+===== PAGE 4 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 4 of 33
+2. Installation and Environment Setup
+A clean, isolated environment is critical for FYP projects to avoid dependency conflicts across different 
+modules and projects.
+2.1 Setting Up a Virtual Environment
+# Step 1 — Create a project folder
+mkdir my_fyp_app
+cd my_fyp_app
+ 
+# Step 2 — Create a virtual environment
+python -m venv venv
+ 
+# Step 3 — Activate (Windows)
+venv\Scripts\activate
+ 
+# Step 3 — Activate (macOS / Linux)
+source venv/bin/activate
+ 
+# Step 4 — Install Streamlit
+pip install streamlit==1.56.0
+ 
+# Step 5 — Install common FYP dependencies
+pip install pandas numpy scikit-learn matplotlib plotly Pillow requests
+ 
+# Step 6 — Freeze requirements
+pip freeze > requirements.txt
+2.2 Recommended Project Structure
+my_fyp_app/
+├── app.py                  # Main entry point
+├── pages/                  # Multi-page app pages
+│   ├── 1_Data_Exploration.py
+│   ├── 2_Model_Training.py
+│   └── 3_Predictions.py
+├── components/             # Reusable UI components
+│   └── charts.py
+├── models/                 # Saved ML models (.pkl, .h5)
+│   └── classifier.pkl
+├── data/                   # Sample datasets
+│   └── sample.csv
+├── utils/                  # Helper functions
+│   └── preprocessing.py
+├── .streamlit/             # Streamlit configuration
+│   └── config.toml
+└── requirements.txt        # Dependencies for deployment
+2.3 Streamlit Configuration File
+The .streamlit/config.toml file lets you customise the app server, theme, and behaviour:
+
+
+===== PAGE 5 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 5 of 33
+# .streamlit/config.toml
+ 
+[server]
+port = 8501
+headless = true           # Required for deployment
+enableCORS = false
+enableXsrfProtection = false
+ 
+[theme]
+primaryColor = '#FF4B4B'  # Streamlit red (or your brand colour)
+backgroundColor = '#FFFFFF'
+secondaryBackgroundColor = '#F0F2F6'
+textColor = '#262730'
+font = 'sans serif'
+ 
+[browser]
+gatherUsageStats = false  # Disable telemetry
+2.4 Running Your First App
+# Create app.py
+import streamlit as st
+ 
+st.set_page_config(
+    page_title='FYP Demo',
+    page_icon=':brain:',
+    layout='wide',          # 'centered' or 'wide'
+    initial_sidebar_state='expanded'
+)
+ 
+st.title('Welcome to My FYP Application')
+st.write('This is my Proof-of-Concept built with Streamlit 1.56.0')
+ 
+# Run: streamlit run app.py
+# Opens at http://localhost:8501
+Important: st.set_page_config() Rules
+Must be the FIRST Streamlit command in your script — before any other st.* call.
+Can only be called ONCE per app (not on individual pages in a multi-page app).
+layout='wide' is recommended for data-heavy FYP dashboards.
+
+
+===== PAGE 6 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 6 of 33
+3. Text, Markdown and Display Elements
+Streamlit provides a rich set of display functions for rendering text, formatted content, data, and media. 
+Choosing the right display function makes your FYP app clearer and more professional.
+3.1 Text Display Functions
+import streamlit as st
+ 
+# Title, header, subheader — semantic hierarchy
+st.title('Main Title')           # Largest — use once per page
+st.header('Section Header')      # Second level
+st.subheader('Sub-section')      # Third level
+ 
+# Body text
+st.text('Plain monospaced text')
+st.write('Smart write — auto-detects type')  # Most versatile
+ 
+# Markdown (full GFM support)
+st.markdown('''
+## Markdown Section
+- **Bold** and *italic* text
+- `inline code` formatting
+- [Link text](https://streamlit.io)
+''')
+ 
+# Code display with syntax highlighting
+st.code('''
+def predict(x):
+    return model.predict(x)
+''', language='python')
+ 
+# LaTeX mathematical expressions
+st.latex(r'\hat{y} = \sigma(W \cdot X + b)')
+ 
+# Caption (small text for images/charts)
+st.caption('Figure 1: Model architecture overview')
+3.2 Notification / Status Messages
+import streamlit as st
+ 
+st.success('Model training completed successfully!')
+st.info('Dataset loaded: 10,000 records found.')
+st.warning('Missing values detected in 3 columns.')
+st.error('ERROR: Model file not found at models/clf.pkl')
+ 
+# Toast notification (appears temporarily — new in 1.32+)
+st.toast('Predictions saved!', icon=':white_check_mark:')
+ 
+# Exception display with traceback
+try:
+    result = risky_operation()
+except Exception as e:
+
+
+===== PAGE 7 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 7 of 33
+    st.exception(e)   # Shows full Python traceback in UI
+3.3 Metric Cards
+Metric cards are perfect for FYP dashboards to show model performance indicators:
+import streamlit as st
+ 
+col1, col2, col3, col4 = st.columns(4)
+ 
+col1.metric(label='Accuracy',  value='94.5%', delta='+2.1%')
+col2.metric(label='Precision', value='91.2%', delta='-0.8%')
+col3.metric(label='Recall',    value='96.3%', delta='+1.5%')
+col4.metric(label='F1 Score',  value='93.7%', delta='+0.6%')
+ 
+# delta_color controls arrow colour
+# 'normal' = green up / red down (default)
+# 'inverse' = red up / green down (for loss metrics)
+# 'off'     = no colour change
+st.metric('Loss', '0.082', delta='-0.014', delta_color='inverse')
+3.4 JSON and Dictionary Display
+import streamlit as st
+ 
+model_params = {
+    'algorithm': 'Random Forest',
+    'n_estimators': 200,
+    'max_depth': 15,
+    'accuracy': 0.945,
+    'features': ['age', 'income', 'score']
+}
+ 
+# Pretty-printed, collapsible JSON tree
+st.json(model_params)
+ 
+# Or use write() — auto-detects dict
+st.write(model_params)
+
+
+===== PAGE 8 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 8 of 33
+4. Input Widgets
+Widgets are the interactive controls that collect user input in a Streamlit app. Every widget returns a  
+Python value that you can immediately use in your code. When a user interacts with a widget, the  
+script re-runs and the new value is available.
+4.1 Text and Number Inputs
+import streamlit as st
+ 
+# Text input
+name = st.text_input('Enter your name', value='Student', max_chars=50)
+ 
+# Password (hidden input)
+api_key = st.text_input('API Key', type='password')
+ 
+# Multi-line text area
+notes = st.text_area('Research Notes', height=150,
+                     placeholder='Describe your methodology...')
+ 
+# Number input (with step and bounds)
+threshold = st.number_input('Classification Threshold',
+                            min_value=0.0, max_value=1.0,
+                            value=0.5, step=0.01,
+                            format='%.2f')
+ 
+st.write(f'Classifying as positive if probability > {threshold}')
+4.2 Selection Widgets
+import streamlit as st
+ 
+# Dropdown (single select)
+model_type = st.selectbox('Select Model',
+    options=['Logistic Regression', 'Random Forest',
+             'SVM', 'Neural Network', 'XGBoost'],
+    index=1)   # Default: Random Forest
+ 
+# Multi-select (returns list)
+features = st.multiselect('Select Features',
+    options=['age', 'income', 'education', 'score', 'region'],
+    default=['age', 'income'])
+ 
+# Radio buttons
+split_method = st.radio('Train/Test Split Method',
+    options=['Hold-out (80/20)', 'K-Fold CV', 'Stratified K-Fold'],
+    horizontal=True)    # horizontal=True available in 1.32+
+ 
+# Checkbox
+normalise = st.checkbox('Normalise features', value=True)
+show_conf_matrix = st.checkbox('Show Confusion Matrix')
+
+
+===== PAGE 9 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 9 of 33
+4.3 Sliders and Range Inputs
+import streamlit as st
+from datetime import date
+ 
+# Single value slider
+n_trees = st.slider('Number of Trees', min_value=10,
+                    max_value=500, value=100, step=10)
+ 
+# Range slider (returns a tuple)
+age_range = st.slider('Age Range Filter',
+                      min_value=18, max_value=80,
+                      value=(25, 55))
+ 
+st.write(f'Filtering: {age_range[0]} to {age_range[1]} years')
+ 
+# Date range slider
+date_range = st.slider('Date Range',
+    min_value=date(2020, 1, 1),
+    max_value=date(2025, 12, 31),
+    value=(date(2022, 1, 1), date(2024, 12, 31)))
+4.4 Buttons and Action Triggers
+import streamlit as st
+ 
+# Standard button — returns True only on the click run
+if st.button('Train Model', type='primary'):
+    with st.spinner('Training in progress...'):
+        # model = train_model(data, params)
+        st.success('Training complete!')
+ 
+# Download button — triggers file download
+import pandas as pd
+df = pd.DataFrame({'col1': [1,2,3], 'col2': ['a','b','c']})
+csv = df.to_csv(index=False)
+ 
+st.download_button(
+    label='Download Results as CSV',
+    data=csv,
+    file_name='predictions.csv',
+    mime='text/csv'
+)
+ 
+# Link button (navigates to URL)
+st.link_button('Open GitHub Repo',
+    'https://github.com/yourusername/fyp-project')
+4.5 Date, Time and File Inputs
+import streamlit as st
+from datetime import date, time
+ 
+# Date picker
+dob = st.date_input('Date of Birth',
+
+
+===== PAGE 10 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 10 of 33
+                    min_value=date(1950,1,1),
+                    max_value=date.today())
+ 
+# Time picker
+start_time = st.time_input('Start Time', value=time(9, 0))
+ 
+# Single file upload
+uploaded = st.file_uploader('Upload Dataset (CSV)',
+                            type=['csv', 'xlsx'])
+if uploaded:
+    import pandas as pd
+    df = pd.read_csv(uploaded)
+    st.success(f'Loaded {len(df)} rows, {len(df.columns)} columns')
+    st.dataframe(df.head())
+ 
+# Multiple file upload
+images = st.file_uploader('Upload Images',
+                          type=['png','jpg','jpeg'],
+                          accept_multiple_files=True)
+st.write(f'{len(images)} image(s) uploaded')
+Widget Return Type Common FYP Use Case
+st.text_input() str User query, patient ID, search term
+st.number_input() int / float Hyperparameter tuning, threshold setting
+st.slider() int / float / tuple Filtering data ranges, confidence thresholds
+st.selectbox() str Choosing ML algorithm or dataset
+st.multiselect() list Feature selection for model training
+st.radio() str Choosing between model variants
+st.checkbox() bool Toggle normalisation, show/hide charts
+st.file_uploader() UploadedFile / list Dataset upload, image classification input
+st.button() bool Trigger model training / prediction
+st.download_button() bool Export predictions or report
+
+
+===== PAGE 11 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 11 of 33
+5. Layouts and Containers
+Layout primitives let you organise widgets and content into professional multi-column, tabbed, and  
+collapsible interfaces — essential for a polished FYP demonstration.
+5.1 Columns
+import streamlit as st
+ 
+# Equal columns
+col1, col2, col3 = st.columns(3)
+col1.metric('Accuracy', '94.5%', '+2%')
+col2.metric('Loss', '0.082', '-0.01', delta_color='inverse')
+col3.metric('F1', '93.7%', '+1%')
+ 
+# Custom ratio columns (weights)
+left, right = st.columns([2, 1])   # left is twice as wide
+with left:
+    st.subheader('Prediction Results')
+    st.dataframe(results_df)
+with right:
+    st.subheader('Controls')
+    threshold = st.slider('Threshold', 0.0, 1.0, 0.5)
+ 
+# Columns with gap parameter
+c1, c2 = st.columns(2, gap='large')  # 'small','medium','large'
+with c1: st.image('confusion_matrix.png', caption='Confusion Matrix')
+with c2: st.image('roc_curve.png', caption='ROC Curve')
+5.2 Sidebar
+import streamlit as st
+ 
+# Use the sidebar for controls — keeps main area clean
+with st.sidebar:
+    st.image('logo.png', width=150)
+    st.title('FYP Controls')
+    st.divider()
+ 
+    dataset = st.selectbox('Dataset', ['Train', 'Test', 'Validation'])
+    model   = st.selectbox('Model', ['RF', 'SVM', 'XGBoost'])
+    st.divider()
+ 
+    st.subheader('Hyperparameters')
+    n_estimators = st.slider('n_estimators', 10, 500, 100)
+    max_depth    = st.number_input('max_depth', 1, 50, 10)
+    st.divider()
+ 
+    run_btn = st.button('Run Experiment', type='primary')
+ 
+# Main page uses sidebar values
+st.header(f'Results: {model} on {dataset} set')
+if run_btn:
+    st.info(f'Running {model} with {n_estimators} trees...')
+
+
+===== PAGE 12 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 12 of 33
+5.3 Tabs
+import streamlit as st
+ 
+tab1, tab2, tab3, tab4 = st.tabs([
+    'Data Overview', 'Model Training',
+    'Evaluation', 'Predictions'
+])
+ 
+with tab1:
+    st.subheader('Dataset Overview')
+    st.dataframe(df.describe())
+ 
+with tab2:
+    st.subheader('Model Configuration')
+    # training controls here
+ 
+with tab3:
+    st.subheader('Performance Metrics')
+    col1, col2 = st.columns(2)
+    col1.metric('Accuracy', '94.5%')
+    col2.metric('F1 Score', '93.7%')
+ 
+with tab4:
+    st.subheader('Live Predictions')
+    # prediction inputs here
+5.4 Expanders and Containers
+import streamlit as st
+ 
+# Expander — collapsible section
+with st.expander('Advanced Configuration', expanded=False):
+    st.write('These settings are for advanced users only.')
+    learning_rate = st.number_input('Learning Rate', 0.0001, 0.1, 0.001)
+    batch_size    = st.selectbox('Batch Size', [16, 32, 64, 128])
+ 
+# Container — groups elements, can be filled later
+result_container = st.empty()   # Placeholder updated later
+ 
+if st.button('Generate Report'):
+    result_container.success('Report generated at 14:32:05')
+ 
+# st.container — logical grouping with border
+with st.container(border=True):
+    st.subheader('Model Summary')
+    st.write('Algorithm: Random Forest | Trees: 200 | Depth: 15')
+5.5 Progress and Status Indicators
+import streamlit as st
+import time
+
+
+===== PAGE 13 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 13 of 33
+# Progress bar — useful for long training loops
+progress = st.progress(0, text='Initialising...')
+for epoch in range(100):
+    time.sleep(0.02)   # simulate work
+    progress.progress(epoch + 1,
+        text=f'Training epoch {epoch+1}/100...')
+progress.empty()   # Remove bar when done
+ 
+# Spinner — wraps a block of code
+with st.spinner('Loading model weights...'):
+    time.sleep(2)   # simulate load
+st.success('Model loaded!')
+ 
+# Status container (structured multi-step status)
+with st.status('Running pipeline...', expanded=True) as status:
+    st.write('Loading data...')
+    time.sleep(1)
+    st.write('Preprocessing features...')
+    time.sleep(1)
+    st.write('Running inference...')
+    status.update(label='Done!', state='complete')
+
+
+===== PAGE 14 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 14 of 33
+6. Data Display and Visualisation
+Streamlit provides both native data display components and seamless integration with popular Python 
+charting libraries. For FYP projects, effective data visualisation is often the centrepiece of your  
+demonstration.
+6.1 DataFrames and Tables
+import streamlit as st
+import pandas as pd
+import numpy as np
+ 
+df = pd.DataFrame({
+    'Patient_ID':  range(1, 6),
+    'Age':         [34, 45, 56, 29, 67],
+    'Diagnosis':   ['Positive','Negative','Positive','Negative','Positive'],
+    'Confidence':  [0.92, 0.87, 0.95, 0.73, 0.89]
+})
+ 
+# Interactive dataframe (sortable, searchable in 1.32+)
+st.dataframe(df, use_container_width=True,
+    column_config={
+        'Patient_ID': st.column_config.NumberColumn('ID'),
+        'Confidence': st.column_config.ProgressColumn(
+            'Confidence', min_value=0, max_value=1, format='%.2f'),
+        'Diagnosis': st.column_config.SelectboxColumn(
+            'Diagnosis', options=['Positive','Negative'])
+    }
+)
+ 
+# Static table (no interaction)
+st.table(df.head(3))
+6.2 Native Streamlit Charts
+import streamlit as st
+import pandas as pd
+import numpy as np
+ 
+# Generate sample data
+chart_data = pd.DataFrame(
+    np.random.randn(20, 3), columns=['Model A', 'Model B', 'Baseline']
+)
+ 
+st.subheader('Line Chart — Training Loss')
+st.line_chart(chart_data)
+ 
+st.subheader('Bar Chart — Feature Importance')
+feat_imp = pd.DataFrame({'importance':[0.35,0.28,0.19,0.11,0.07]},
+    index=['income','age','score','region','edu'])
+st.bar_chart(feat_imp)
+ 
+st.subheader('Area Chart — Cumulative Accuracy')
+st.area_chart(chart_data)
+
+
+===== PAGE 15 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 15 of 33
+ 
+st.subheader('Scatter Chart')
+st.scatter_chart(chart_data, x='Model A', y='Model B')
+6.3 Matplotlib / Seaborn Integration
+import streamlit as st
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+ 
+# Confusion matrix with seaborn heatmap
+cm = np.array([[85, 5], [8, 102]])
+fig, ax = plt.subplots(figsize=(5, 4))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+            xticklabels=['Pred Neg','Pred Pos'],
+            yticklabels=['True Neg','True Pos'], ax=ax)
+ax.set_title('Confusion Matrix')
+ax.set_ylabel('Actual')
+ax.set_xlabel('Predicted')
+st.pyplot(fig)
+plt.close(fig)  # IMPORTANT: always close to free memory
+ 
+# ROC Curve
+fpr = np.linspace(0, 1, 100)
+tpr = np.sqrt(fpr)   # mock curve
+fig2, ax2 = plt.subplots()
+ax2.plot(fpr, tpr, 'b-', lw=2, label='ROC (AUC=0.94)')
+ax2.plot([0,1],[0,1],'r--', label='Random')
+ax2.set_xlabel('False Positive Rate')
+ax2.set_ylabel('True Positive Rate')
+ax2.legend()
+ax2.set_title('ROC Curve')
+st.pyplot(fig2)
+6.4 Plotly Interactive Charts
+Plotly charts are interactive (hover, zoom, pan) — ideal for FYP demonstrations where you want  
+examiners to explore data:
+import streamlit as st
+import plotly.express as px
+import plotly.graph_objects as go
+import pandas as pd
+ 
+# Interactive scatter plot
+df = px.data.iris()
+fig = px.scatter(df, x='sepal_width', y='sepal_length',
+                 color='species', size='petal_length',
+                 title='Iris Dataset — Feature Correlation')
+st.plotly_chart(fig, use_container_width=True)
+ 
+# Model comparison bar chart
+models = ['Logistic Reg', 'Random Forest', 'SVM', 'XGBoost']
+scores  = [0.87, 0.94, 0.91, 0.96]
+fig2 = go.Figure(go.Bar(x=models, y=scores,
+    marker_color=['#636EFA','#EF553B','#00CC96','#AB63FA'],
+
+
+===== PAGE 16 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 16 of 33
+    text=[f'{s:.0%}' for s in scores], textposition='outside'))
+fig2.update_layout(title='Model Accuracy Comparison',
+    yaxis_range=[0.8, 1.0])
+st.plotly_chart(fig2, use_container_width=True)
+6.5 Displaying Images and Media
+import streamlit as st
+from PIL import Image
+ 
+# Display image from file
+img = Image.open('data/sample_xray.jpg')
+st.image(img, caption='Chest X-Ray — Patient 001', use_container_width=True)
+ 
+# Display from URL
+st.image('https://upload.wikimedia.org/...',
+         caption='Sample Image', width=400)
+ 
+# Multiple images in columns
+imgs = ['img1.png', 'img2.png', 'img3.png']
+cols = st.columns(len(imgs))
+for col, path in zip(cols, imgs):
+    col.image(path, use_container_width=True)
+ 
+# Video
+video = open('demo.mp4', 'rb').read()
+st.video(video)
+ 
+# Audio
+audio = open('output.wav', 'rb').read()
+st.audio(audio, format='audio/wav')
+
+
+===== PAGE 17 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 17 of 33
+7. Session State and Reactivity
+Session state is one of the most important — and frequently misunderstood — features in Streamlit.  
+Because the entire script re-runs on every widget interaction, you need a mechanism to persist values 
+across those re-runs. st.session_state provides this per-user, in-memory persistence.
+7.1 Understanding the Problem
+# PROBLEM: Without session_state, count resets to 0 on every re-run
+import streamlit as st
+ 
+count = 0   # This is reset to 0 EVERY TIME the script runs
+if st.button('Increment'):
+    count += 1   # This never actually persists
+st.write(f'Count: {count}')   # Always shows 0
+# SOLUTION: Use session_state
+import streamlit as st
+ 
+# Initialise (only runs if key doesn't exist)
+if 'count' not in st.session_state:
+    st.session_state.count = 0
+ 
+if st.button('Increment'):
+    st.session_state.count += 1
+ 
+st.write(f'Count: {st.session_state.count}')  # Persists correctly
+7.2 Session State for ML Workflows
+import streamlit as st
+import pickle
+ 
+# --- Initialise all state keys at top of script ---
+defaults = {
+    'model': None,
+    'training_history': [],
+    'current_dataset': None,
+    'predictions': None,
+    'is_trained': False,
+}
+for key, val in defaults.items():
+    if key not in st.session_state:
+        st.session_state[key] = val
+ 
+# --- Sidebar: training controls ---
+with st.sidebar:
+    if st.button('Train Model', type='primary'):
+        with st.spinner('Training...'):
+            # st.session_state.model = train(data)  # your function
+            st.session_state.is_trained = True
+            st.session_state.training_history.append(
+                {'epoch': len(st.session_state.training_history)+1,
+
+
+===== PAGE 18 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 18 of 33
+                 'accuracy': 0.94}
+            )
+        st.success('Model ready!')
+ 
+# --- Main page: use trained model ---
+if st.session_state.is_trained:
+    st.success(f'Model trained — {len(st.session_state.training_history)} run(s)')
+    if st.button('Predict'):
+        # st.session_state.predictions = st.session_state.model.predict(X)
+        pass
+else:
+    st.warning('Please train the model first.')
+7.3 Callbacks — Widget on_change
+import streamlit as st
+ 
+def on_model_change():
+    # Called BEFORE the re-run when selectbox changes
+    st.session_state.model = None  # Reset model on algorithm change
+    st.session_state.is_trained = False
+    st.toast('Model reset — please retrain.', icon=':warning:')
+ 
+if 'model' not in st.session_state:
+    st.session_state.model = None
+    st.session_state.is_trained = False
+ 
+algorithm = st.selectbox(
+    'Algorithm',
+    ['Random Forest', 'SVM', 'XGBoost'],
+    on_change=on_model_change
+)
+7.4 Forms — Batch Submission
+Forms group widgets so that Streamlit only re-runs when the submit button is clicked — preventing  
+premature re-runs on every keystroke:
+import streamlit as st
+ 
+with st.form('patient_form'):
+    st.subheader('Patient Information')
+    col1, col2 = st.columns(2)
+    with col1:
+        age    = st.number_input('Age', 0, 120, 35)
+        gender = st.selectbox('Gender', ['Male','Female','Other'])
+    with col2:
+        weight = st.number_input('Weight (kg)', 30.0, 200.0, 70.0)
+        height = st.number_input('Height (cm)', 100.0, 250.0, 170.0)
+ 
+    symptoms = st.multiselect('Symptoms',
+        ['Fever','Cough','Fatigue','Breathlessness'])
+    notes = st.text_area('Clinical Notes')
+ 
+    submitted = st.form_submit_button('Run Diagnosis',
+                                      type='primary')
+
+
+===== PAGE 19 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 19 of 33
+if submitted:   # Only True when button clicked
+    bmi = weight / ((height/100) ** 2)
+    st.metric('BMI', f'{bmi:.1f}')
+    st.info(f'Processing {age}yr {gender} patient with {len(symptoms)} symptoms...')
+
+
+===== PAGE 20 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 20 of 33
+8. Multi-Page Applications
+Multi-page apps allow you to split a complex FYP application into logical sections — such as Data  
+Exploration, Model Training, Evaluation, and Live Demo — each as a separate page, with automatic 
+navigation in the sidebar.
+8.1 File-Based Multi-Page Routing
+Streamlit automatically discovers pages from the pages/ directory. The filename determines the page 
+name and order in the sidebar:
+my_fyp_app/
+├── app.py                   # Home page (main entry point)
+└── pages/
+    ├── 1_Data_Overview.py   # Sidebar: '1 Data Overview'
+    ├── 2_Model_Training.py  # Sidebar: '2 Model Training'
+    ├── 3_Evaluation.py      # Sidebar: '3 Evaluation'
+    └── 4_Live_Prediction.py # Sidebar: '4 Live Prediction'
+ 
+# Naming convention:
+# - Leading number sets order (1_, 2_, ...)
+# - Underscores become spaces in sidebar labels
+# - Emojis are supported: '2_:chart:_Model_Training.py'
+8.2 Home Page (app.py)
+# app.py — Home / Landing page
+import streamlit as st
+ 
+st.set_page_config(   # MUST be first st.* call, defined only here
+    page_title='FYP: Smart Disease Predictor',
+    page_icon=':stethoscope:',
+    layout='wide'
+)
+ 
+st.title(':brain: Smart Disease Prediction System')
+st.subheader('Final Year Project — BSc (Hons) in IT')
+st.divider()
+ 
+col1, col2, col3, col4 = st.columns(4)
+col1.metric('Dataset Size', '15,000 records')
+col2.metric('Features', '18 variables')
+col3.metric('Best Accuracy', '96.2%')
+col4.metric('Model', 'XGBoost')
+ 
+st.divider()
+st.markdown('''
+### Navigation
+Use the sidebar to navigate between sections:
+- **Data Overview** — explore and visualise the dataset
+- **Model Training** — configure and train classifiers
+- **Evaluation** — view performance metrics and charts
+- **Live Prediction** — enter patient data and get predictions
+''')
+
+
+===== PAGE 21 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 21 of 33
+8.3 Sharing State Across Pages
+Session state is shared across all pages in a multi-page app — this is how you pass trained models  
+between pages:
+# pages/2_Model_Training.py
+import streamlit as st
+import pickle
+ 
+st.header('Model Training')
+ 
+# Initialise shared state (safe to call on every page)
+if 'trained_model' not in st.session_state:
+    st.session_state.trained_model = None
+ 
+if st.button('Train XGBoost', type='primary'):
+    with st.spinner('Training...'):
+        # model = XGBClassifier().fit(X_train, y_train)
+        # st.session_state.trained_model = model
+        st.session_state.trained_model = 'model_placeholder'
+    st.success('Model trained and saved to session!')
+# pages/4_Live_Prediction.py
+import streamlit as st
+ 
+st.header('Live Prediction')
+ 
+# Access the model trained in page 2
+if st.session_state.get('trained_model') is None:
+    st.warning('No model found. Please go to Model Training first.')
+    st.stop()   # Halt rendering if prerequisite not met
+ 
+st.success('Model loaded from session — ready for predictions!')
+# predictions = st.session_state.trained_model.predict(X_input)
+8.4 Programmatic Navigation (1.36+)
+import streamlit as st
+ 
+# Navigate programmatically to another page
+if st.button('Go to Evaluation'):
+    st.switch_page('pages/3_Evaluation.py')
+ 
+# Navigation with st.Page and st.navigation (1.36+)
+# For custom navigation menus without file-based routing:
+# pg = st.navigation([
+#     st.Page('app.py', title='Home', icon=':house:'),
+#     st.Page('pages/2_Model_Training.py', title='Train'),
+# ])
+# pg.run()
+
+
+===== PAGE 22 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 22 of 33
+9. Caching and Performance Optimisation
+Since Streamlit re-runs the entire script on every interaction, expensive operations (loading datasets, 
+training models, calling APIs) would repeat unnecessarily. Caching is the primary performance tool in 
+Streamlit.
+9.1 @st.cache_data — For Serialisable Data
+Use cache_data for functions that return DataFrames, NumPy arrays, lists, dicts, or any serialisable  
+Python object:
+import streamlit as st
+import pandas as pd
+import time
+ 
+@st.cache_data   # Caches the return value
+def load_dataset(filepath: str) -> pd.DataFrame:
+    '''Loads CSV — cached so file is read only once'''
+    time.sleep(2)   # simulate slow IO
+    df = pd.read_csv(filepath)
+    return df
+ 
+@st.cache_data(ttl=3600)   # Cache expires after 1 hour
+def fetch_live_data(api_url: str) -> dict:
+    import requests
+    return requests.get(api_url).json()
+ 
+@st.cache_data(max_entries=5)  # Limit cache size
+def preprocess(df: pd.DataFrame, scaler_type: str) -> pd.DataFrame:
+    # heavy preprocessing
+    return df
+ 
+# Usage — only runs once; subsequent calls return cached result
+df = load_dataset('data/medical_records.csv')
+st.dataframe(df.head())
+9.2 @st.cache_resource — For Non-Serialisable Resources
+Use cache_resource for ML models, database connections, and other objects that cannot (or should 
+not) be serialised:
+import streamlit as st
+import pickle
+ 
+@st.cache_resource   # Shared across ALL users and sessions
+def load_model(path: str):
+    '''Load ML model once — shared across all users'''
+    with open(path, 'rb') as f:
+        return pickle.load(f)
+ 
+@st.cache_resource
+def get_db_connection():
+    import sqlite3
+    return sqlite3.connect('fyp_database.db', check_same_thread=False)
+
+
+===== PAGE 23 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 23 of 33
+@st.cache_resource
+def load_transformers_model(model_name: str):
+    from transformers import pipeline
+    return pipeline('text-classification', model=model_name)
+ 
+# Model is loaded once and reused for all predictions
+model = load_model('models/xgboost_classifier.pkl')
+nlp   = load_transformers_model('distilbert-base-uncased')
+9.3 Cache Invalidation
+import streamlit as st
+ 
+# Clear specific function's cache
+if st.button('Reload Data'):
+    load_dataset.clear()   # Clears cache for this function only
+    st.rerun()             # Force immediate re-run
+ 
+# Clear ALL caches
+if st.button('Clear All Caches'):
+    st.cache_data.clear()
+    st.cache_resource.clear()
+ 
+# Bust cache by passing a changing parameter
+# (functions are re-run when any argument changes)
+@st.cache_data
+def load_versioned(path: str, version: int):
+    return pd.read_csv(path)
+ 
+df = load_versioned('data.csv', version=2)  # version change = re-run
+Decorator Best For Shared 
+Across 
+Sessions?
+Serialisable?
+@st.cache_data DataFrames, arrays, API results, 
+processed data
+No (per-
+session copy)
+Yes
+@st.cache_resource ML models, DB connections, 
+tokenizers, pipelines
+YES (all users 
+share)
+Not required
+Performance Best Practices
+Always cache dataset loading — even a 1 MB CSV takes 50-200ms to parse on every run.
+Always cache model loading — a 100MB model file takes 2-10 seconds to load.
+Use ttl= for data that changes over time (API responses, database queries).
+Avoid caching functions with side effects (e.g., writing to files inside a cached function).
+Use st.cache_resource for Transformers / TensorFlow / PyTorch models — they are not 
+serialisable.
+
+
+===== PAGE 24 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 24 of 33
+10. AI and ML Integration (FYP Focus)
+This section covers the most FYP-relevant patterns: integrating trained ML models, connecting to AI  
+APIs (OpenAI, HuggingFace), building chatbot interfaces, and creating real-time inference pipelines.
+10.1 Loading and Using a Scikit-learn Model
+import streamlit as st
+import pickle
+import pandas as pd
+import numpy as np
+ 
+@st.cache_resource
+def load_model():
+    with open('models/disease_classifier.pkl', 'rb') as f:
+        return pickle.load(f)
+ 
+@st.cache_resource
+def load_scaler():
+    with open('models/scaler.pkl', 'rb') as f:
+        return pickle.load(f)
+ 
+model  = load_model()
+scaler = load_scaler()
+ 
+st.title('Disease Risk Predictor')
+ 
+with st.form('predict_form'):
+    col1, col2 = st.columns(2)
+    age     = col1.number_input('Age', 18, 100, 45)
+    glucose = col1.number_input('Glucose Level', 50, 300, 120)
+    bmi     = col2.number_input('BMI', 10.0, 60.0, 25.0)
+    bp      = col2.number_input('Blood Pressure', 40, 200, 80)
+    submitted = st.form_submit_button('Predict Risk', type='primary')
+ 
+if submitted:
+    features = np.array([[age, glucose, bmi, bp]])
+    scaled   = scaler.transform(features)
+    prob     = model.predict_proba(scaled)[0][1]
+    label    = 'High Risk' if prob > 0.5 else 'Low Risk'
+ 
+    col1, col2 = st.columns(2)
+    col1.metric('Prediction', label)
+    col2.metric('Probability', f'{prob:.1%}')
+ 
+    if prob > 0.5:
+        st.error(f'High risk detected ({prob:.1%} confidence). Consult a physician.')
+    else:
+        st.success(f'Low risk ({1-prob:.1%} confidence). Continue healthy habits.')
+10.2 Image Classification with Deep Learning
+import streamlit as st
+import numpy as np
+
+
+===== PAGE 25 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 25 of 33
+from PIL import Image
+ 
+@st.cache_resource
+def load_keras_model():
+    import tensorflow as tf
+    return tf.keras.models.load_model('models/cnn_classifier.h5')
+ 
+CLASS_NAMES = ['Healthy', 'Pneumonia', 'COVID-19']
+ 
+st.title('Chest X-Ray Classifier')
+ 
+uploaded = st.file_uploader('Upload X-Ray Image',
+                            type=['jpg','png','jpeg'])
+ 
+if uploaded:
+    img = Image.open(uploaded).convert('RGB')
+    st.image(img, caption='Uploaded X-Ray', use_container_width=True)
+ 
+    if st.button('Classify', type='primary'):
+        with st.spinner('Analysing image...'):
+            model = load_keras_model()
+            arr  = np.array(img.resize((224, 224))) / 255.0
+            arr  = np.expand_dims(arr, axis=0)
+            pred = model.predict(arr)[0]
+ 
+        st.subheader('Classification Results')
+        for cls, conf in zip(CLASS_NAMES, pred):
+            st.metric(cls, f'{conf:.1%}')
+            st.progress(float(conf))
+10.3 NLP with HuggingFace Transformers
+import streamlit as st
+ 
+@st.cache_resource
+def load_sentiment_pipeline():
+    from transformers import pipeline
+    return pipeline('sentiment-analysis',
+                    model='distilbert-base-uncased-finetuned-sst-2-english')
+ 
+@st.cache_resource
+def load_summariser():
+    from transformers import pipeline
+    return pipeline('summarization', model='facebook/bart-large-cnn')
+ 
+tab1, tab2 = st.tabs(['Sentiment Analysis', 'Text Summarisation'])
+ 
+with tab1:
+    text = st.text_area('Enter review text', height=100)
+    if st.button('Analyse Sentiment'):
+        clf    = load_sentiment_pipeline()
+        result = clf(text)[0]
+        emoji  = ':green_heart:' if result['label']=='POSITIVE' else ':red_circle:'
+        st.metric(f'{emoji} Sentiment', result['label'],
+                  f'Confidence: {result["score"]:.1%}')
+ 
+with tab2:
+    article = st.text_area('Paste article text', height=200)
+    if st.button('Summarise'):
+
+
+===== PAGE 26 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 26 of 33
+        summariser = load_summariser()
+        summary = summariser(article, max_length=130, min_length=30)
+        st.write(summary[0]['summary_text'])
+10.4 Building a Chatbot Interface with st.chat_message
+import streamlit as st
+ 
+st.title(':robot_face: FYP Research Assistant')
+ 
+# Initialise message history
+if 'messages' not in st.session_state:
+    st.session_state.messages = []
+ 
+# Display message history
+for msg in st.session_state.messages:
+    with st.chat_message(msg['role']):
+        st.markdown(msg['content'])
+ 
+# Chat input (appears at bottom of page)
+if prompt := st.chat_input('Ask about your FYP data...'):
+    # Add user message
+    st.session_state.messages.append({'role':'user','content':prompt})
+    with st.chat_message('user'):
+        st.markdown(prompt)
+ 
+    # Generate and display assistant response
+    with st.chat_message('assistant'):
+        with st.spinner('Thinking...'):
+            # response = your_llm_call(prompt)
+            response = f'You asked: "{prompt}" — (connect your LLM here)'
+        st.markdown(response)
+        st.session_state.messages.append(
+            {'role':'assistant','content':response})
+
+
+===== PAGE 27 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 27 of 33
+11. Deployment
+Deployment transforms your local Streamlit app into a publicly accessible web application — essential 
+for FYP demonstrations, supervisor reviews, and examiner assessments. This section covers three  
+deployment approaches from simplest to most production-ready.
+11.1 Pre-Deployment Checklist
+Item Requirement Command / File
+Dependencies All packages in requirements.txt pip freeze > requirements.txt
+Secrets API keys in .streamlit/secrets.toml st.secrets['MY_KEY']
+Config headless=true in config.toml [server] headless=true
+Port App listens on $PORT env var Handled automatically
+Memory Limit cached data size Use @st.cache_data(max_entries=N)
+Python version Specify in runtime.txt python-3.11.9
+11.2 Streamlit Community Cloud (Recommended — Free)
+Streamlit Community Cloud is the official free hosting platform by Streamlit. It deploys directly from a 
+GitHub repository in under 5 minutes.
+1. Create a GitHub repository and push your app code.
+2. Ensure requirements.txt is in the root directory.
+3. Visit share.streamlit.io and sign in with GitHub.
+4. Click 'New app' and select your repository, branch, and main file (app.py).
+5. Click 'Deploy' — your app is live at https://yourapp.streamlit.app within 2-3 minutes.
+# requirements.txt (example for an ML FYP app)
+streamlit==1.56.0
+pandas==2.2.2
+numpy==1.26.4
+scikit-learn==1.5.0
+matplotlib==3.9.0
+plotly==5.22.0
+Pillow==10.3.0
+xgboost==2.0.3
+ 
+# For NLP projects:
+# transformers==4.41.0
+# torch==2.3.0           <- Large! May need Render/Railway instead
+ 
+# IMPORTANT: Do NOT include version-less entries
+# IMPORTANT: Pin exact versions to avoid deployment surprises
+
+
+===== PAGE 28 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 28 of 33
+11.3 Handling Secrets Securely
+Never hardcode API keys in your source code. Use Streamlit's secrets management:
+# .streamlit/secrets.toml (LOCAL — add to .gitignore!)
+[api_keys]
+openai_key = 'sk-xxxxxxxxxxxxxxxxxxxxxxxx'
+huggingface_token = 'hf_xxxxxxxxxxxxxxxx'
+ 
+[database]
+host = 'localhost'
+port = 5432
+password = 'mypassword'
+# app.py — Access secrets safely
+import streamlit as st
+ 
+# Accessing secrets
+openai_key = st.secrets['api_keys']['openai_key']
+db_pass    = st.secrets['database']['password']
+ 
+# For Community Cloud:
+# Go to app settings -> Secrets -> paste your secrets.toml content
+# The file is encrypted and never visible in your repo
+11.4 Deployment on Render (Free Tier)
+Render is suitable for apps requiring more RAM (e.g., TensorFlow/PyTorch models) or always-on  
+availability. Free tier includes 512 MB RAM.
+6. Create an account at render.com and connect your GitHub repo.
+7. Create a new 'Web Service' and point to your repository.
+8. Set the Start Command: streamlit run app.py --server.port $PORT --server.headless true
+9. Add environment variables (your secrets) in the Render dashboard.
+10. Deploy — Render builds from requirements.txt automatically.
+# Start command for Render / Railway / Heroku
+streamlit run app.py --server.port $PORT --server.headless true
+ 
+# Or set in Procfile (Heroku / Railway):
+# web: streamlit run app.py --server.port $PORT --server.headless true
+11.5 Docker Deployment
+Docker containers provide a fully reproducible environment — ideal for FYP submissions that must  
+run identically on any machine:
+# Dockerfile
+FROM python:3.11-slim
+ 
+WORKDIR /app
+
+
+===== PAGE 29 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 29 of 33
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+ 
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+ 
+# Copy application files
+COPY . .
+ 
+# Expose Streamlit default port
+EXPOSE 8501
+ 
+# Health check
+HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health || exit 1
+ 
+# Run the application
+ENTRYPOINT ['streamlit', 'run', 'app.py',
+            '--server.port=8501',
+            '--server.address=0.0.0.0',
+            '--server.headless=true']
+# .dockerignore
+venv/
+__pycache__/
+*.pyc
+.git/
+.streamlit/secrets.toml   # NEVER include secrets
+*.ipynb
+ 
+# Build and run Docker image
+docker build -t fyp-app .
+docker run -p 8501:8501 fyp-app
+ 
+# Access at: http://localhost:8501
+11.6 Deployment Comparison
+Platform Cost RAM Setup Time Best For
+Streamlit Community 
+Cloud
+Free 1 GB < 5 min Most FYP apps — 
+easiest
+Render (Free tier) Free 512 MB 10 min Always-on, medium 
+models
+Railway $5/mo credit 512 MB 10 min Persistent databases
+Hugging Face 
+Spaces
+Free 16 GB GPU 5 min Heavy DL / LLM models
+Docker (local) Free Unlimited 30 min Reproducible 
+submissions
+Azure / AWS / GCP Pay-as-use Scalable 1-2 hrs Production-scale apps
+
+
+===== PAGE 30 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 30 of 33
+
+
+===== PAGE 31 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 31 of 33
+12. Best Practices and FYP Tips
+12.1 Code Organisation
+# utils/model_utils.py — keep business logic OUT of app.py
+import pickle
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+ 
+def load_artefacts(model_path, scaler_path):
+    with open(model_path, 'rb') as f: model = pickle.load(f)
+    with open(scaler_path, 'rb') as f: scaler = pickle.load(f)
+    return model, scaler
+ 
+def predict(model, scaler, features: np.ndarray):
+    scaled = scaler.transform(features)
+    prob   = model.predict_proba(scaled)[0][1]
+    return prob, 'High Risk' if prob > 0.5 else 'Low Risk'
+# app.py — thin UI layer only
+import streamlit as st
+import numpy as np
+from utils.model_utils import load_artefacts, predict
+ 
+@st.cache_resource
+def get_model():
+    return load_artefacts('models/clf.pkl', 'models/scaler.pkl')
+ 
+model, scaler = get_model()
+# ... UI code only below
+12.2 Error Handling in Streamlit Apps
+import streamlit as st
+import pandas as pd
+ 
+uploaded = st.file_uploader('Upload Dataset', type='csv')
+ 
+if uploaded:
+    try:
+        df = pd.read_csv(uploaded)
+        required_cols = ['age', 'income', 'label']
+        missing = [c for c in required_cols if c not in df.columns]
+        if missing:
+            st.error(f'Missing required columns: {missing}')
+            st.stop()   # Halt page rendering
+        st.success(f'Dataset valid — {len(df):,} rows loaded')
+    except Exception as e:
+        st.error(f'Failed to parse CSV: {e}')
+        st.stop()
+
+
+===== PAGE 32 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 32 of 33
+12.3 Common Pitfalls to Avoid
+Pitfall Problem Solution
+No caching on model load Model reloads on every click 
+— 5-30s delay
+@st.cache_resource on all load functions
+State in global variables Values reset on re-run — logic 
+breaks
+Use st.session_state for persistence
+set_page_config() not first StreamlitAPIException crash Always call as first st.* line
+No error handling on file 
+upload
+App crashes on bad CSV Wrap in try/except + st.stop()
+Large model in cache_data Model pickled/unpickled on 
+every cache hit
+Use @st.cache_resource instead
+API keys in source code Credentials exposed in GitHub Use st.secrets or environment variables
+plt.show() instead of 
+st.pyplot()
+Matplotlib plots never appear Always pass figure to st.pyplot(fig)
+plt.close() forgotten Memory leak in long sessions Always plt.close(fig) after st.pyplot(fig)
+12.4 FYP Demonstration Checklist
+Before Presenting Your FYP Demo
+1. Test with fresh data — your examiner WILL upload their own file.
+2. Add loading spinners on all slow operations (model inference, DB queries).
+3. Show metric cards prominently — accuracy, precision, recall, F1.
+4. Include an 'About' section explaining your model and dataset.
+5. Test on mobile — examiners may view on phones; use layout='wide' for desktop.
+6. Add meaningful error messages, not just raw Python tracebacks.
+7. Deploy to Streamlit Community Cloud before demo day — do not demo on localhost.
+8. Keep a backup of your deployed URL and your model file in Google Drive.
+9. Test the deployed version — it may behave differently from your local machine.
+10. Clear session state before demos to start with a clean slate.
+12.5 Quick Reference — Most-Used Commands
+Category Command Purpose
+Display st.write() Universal display — auto-detects type
+Display st.metric(label, value, delta) KPI cards with change indicators
+Display st.dataframe(df) Interactive sortable table
+Chart st.plotly_chart(fig) Interactive Plotly chart
+Chart st.pyplot(fig) Matplotlib/Seaborn chart
+Layout st.columns(n) Side-by-side layout
+Layout st.tabs([...]) Tabbed interface
+Layout st.sidebar Left panel controls
+Widget st.selectbox() Dropdown selector
+
+
+===== PAGE 33 =====
+IT41043 — Intelligent Systems | Streamlit Development
+Faculty of IT | Horizon Campus | 2026
+Isuru Madusanka Samarappulige
+3rd Year — 2nd Semester
+Streamlit Development (Basic to Deployment)   |   Page 33 of 33
+Widget st.file_uploader() Upload CSV/image
+Widget st.button() Action trigger
+State st.session_state.key Persistent cross-run value
+Cache @st.cache_data Cache DataFrames / results
+Cache @st.cache_resource Cache models / connections
+Control st.stop() Halt page rendering
+Control st.rerun() Force immediate re-run
+Feedback st.spinner() Loading indicator
+Feedback st.progress(n) Progress bar (0-100)
+Chat st.chat_message() Chat bubble container
+Chat st.chat_input() Chat text input bar
+End of Lecture Notes — Streamlit Development (Basic to Deployment)
+Horizon Campus — Faculty of IT  |  2026  |  Isuru Madusanka Samarappulige
