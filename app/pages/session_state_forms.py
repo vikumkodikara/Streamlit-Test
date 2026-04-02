@@ -30,7 +30,7 @@ for key, value in defaults.items():
 def on_model_change() -> None:
     st.session_state.model = None
     st.session_state.is_trained = False
-    st.toast("Model reset - please retrain.", icon=":warning:")
+    st.toast("Model reset - please retrain.", icon="⚠️")
 
 
 algorithm = st.selectbox("Algorithm", ["Random Forest", "SVM", "XGBoost"], on_change=on_model_change)
