@@ -1,35 +1,132 @@
-# Streamlit Test
+# Intelligent Streamlit FYP Application
 
-This repository contains a 33-page Streamlit lecture implementation split into neat, searchable files.
+This is a multi-page Streamlit application built as a Final Year Project proof-of-concept.  
+It demonstrates data exploration, model workflow simulation, evaluation views, prediction interfaces, chatbot-style interaction, and deployment-ready project organization.
 
-## Where the PDF Code Was Added
+## Features
 
-- `app/pages/02_text_and_display.py`
-- `app/pages/03_input_widgets.py`
-- `app/pages/04_layouts_containers.py`
-- `app/pages/05_data_visualization.py`
-- `app/pages/06_session_state_forms.py`
-- `app/pages/07_multipage_navigation.py`
-- `app/pages/08_caching_performance.py`
-- `app/pages/09_ai_ml_integration.py`
-- `app/pages/10_deployment_guide.py`
-- `app/pages/11_best_practices.py`
-- `src/utils/model_utils.py`
+- Data explorer workflows for uploaded datasets
+- Model training simulation with session state
+- Evaluation dashboards with metrics and charts
+- Prediction interface with user inputs
+- Chat-style interaction page
+- Caching examples for performance optimization
+- Modular structure for maintainability and scaling
+- Streamlit Cloud deployment-ready setup
 
-Full page-to-file mapping: `docs/pdf_code_map.md`
+## Project Structure
 
-Raw extraction artifact: `docs/pdf_extracted_pages.txt`
+```text
+Streamlit-Test/
+├── app/
+│   ├── main.py
+│   └── pages/
+│       ├── 01_overview.py
+│       ├── 02_text_and_display.py
+│       ├── 03_input_widgets.py
+│       ├── 04_layouts_containers.py
+│       ├── 05_data_visualization.py
+│       ├── 06_session_state_forms.py
+│       ├── 07_multipage_navigation.py
+│       ├── 08_caching_performance.py
+│       ├── 09_ai_ml_integration.py
+│       ├── 10_deployment_guide.py
+│       └── 11_best_practices.py
+├── src/
+│   ├── components/
+│   ├── services/
+│   └── utils/
+│       └── model_utils.py
+├── tests/
+│   ├── test_model_utils.py
+│   └── test_project_syntax.py
+├── docs/
+│   ├── pdf_code_map.md
+│   └── pdf_extracted_pages.txt
+├── data/
+├── assets/
+├── .streamlit/
+│   ├── config.toml
+│   └── secrets.toml.example
+├── requirements.txt
+└── .gitignore
+```
 
-## Run Locally
+## Installation and Setup
+
+1. Clone your repository.
+
+```bash
+git clone <your-repo-url>
+cd Streamlit-Test
+```
+
+2. Create a virtual environment.
+
+```bash
+python -m venv .venv
+```
+
+3. Activate the environment.
+
+Windows:
+
+```bash
+.venv\Scripts\activate
+```
+
+macOS/Linux:
+
+```bash
+source .venv/bin/activate
+```
+
+4. Install dependencies.
 
 ```bash
 pip install -r requirements.txt
+```
+
+## Running Locally
+
+```bash
 streamlit run app/main.py
 ```
 
-## Run Tests
+After running, open http://localhost:8501 in your browser.
+
+## Running Tests
 
 ```bash
 pytest -q
 ```
+
+## Deployment (Streamlit Community Cloud)
+
+1. Push the latest code to GitHub.
+2. Open https://share.streamlit.io and sign in.
+3. Create a new app and select your repository and main branch.
+4. Set the app entry file to app/main.py.
+5. Add required secrets in the Streamlit Cloud app settings.
+6. Deploy.
+
+## Configuration
+
+The app uses .streamlit/config.toml for server and theme settings.
+
+Use .streamlit/secrets.toml.example as a template for local secrets and Streamlit Cloud secrets.
+
+## Notes
+
+- The lecture-note implementation is mapped in docs/pdf_code_map.md.
+- Extracted PDF text used for organization is in docs/pdf_extracted_pages.txt.
+- This project is intended for academic and educational use.
+
+## Future Improvements
+
+- Replace demo logic with real trained models
+- Add data validation and richer error handling on all pages
+- Add integration tests for key user flows
+- Add authentication and role-based access
+- Add Docker deployment profile for reproducible runtime
 
