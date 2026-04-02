@@ -21,7 +21,6 @@ Streamlit-Test/
 ├── app/
 │   ├── main.py
 │   └── pages/
-│       ├── overview.py
 │       ├── text_and_display.py
 │       ├── input_widgets.py
 │       ├── layouts_containers.py
@@ -31,7 +30,6 @@ Streamlit-Test/
 │       ├── caching_performance.py
 │       ├── ai_ml_integration.py
 │       ├── deployment_guide.py
-│       └── best_practices.py
 ├── src/
 │   ├── components/
 │   ├── services/
