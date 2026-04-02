@@ -30,7 +30,7 @@ st.markdown(
 </style>
 
 <div class="hero-card">
-  <div class="hero-title">This Is My First FYP Application</div>
+  <div class="hero-title">This Is My Testing Application</div>
   <div class="hero-text">
     This project is a multi-page Streamlit application built as a final year proof-of-concept.
     It brings together data exploration, model workflow demonstrations, evaluation dashboards,
