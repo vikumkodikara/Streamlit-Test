@@ -1,6 +1,6 @@
 # Streamlit Test
 
-This project is structured for building a multi-page Streamlit app from your PDF code and deploying it to Streamlit Community Cloud.
+This project is structured for building a multi-page Streamlit and deploying it to Streamlit Community Cloud.
 
 ## Project Structure
 
@@ -22,10 +22,3 @@ pip install -r requirements.txt
 streamlit run app/main.py
 ```
 
-## Deploy to Streamlit Cloud
-
-1. Push this repository to GitHub.
-2. Open Streamlit Community Cloud.
-3. Select your repository and branch.
-4. Set the main file path to `app/main.py`.
-5. Add secrets in Streamlit Cloud settings if needed.
