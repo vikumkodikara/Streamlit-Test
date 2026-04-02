@@ -1,6 +1,6 @@
 # Intelligent Streamlit FYP Application
 
-This is a multi-page Streamlit application built as a Final Year Project proof-of-concept.  
+This is a multi-page Streamlit application built to get an idea how it work.  
 It demonstrates data exploration, model workflow simulation, evaluation views, prediction interfaces, chatbot-style interaction, and deployment-ready project organization.
 
 ## Features
@@ -29,7 +29,6 @@ Streamlit-Test/
 │       ├── multipage_navigation.py
 │       ├── caching_performance.py
 │       ├── ai_ml_integration.py
-│       ├── deployment_guide.py
 ├── src/
 │   ├── components/
 │   ├── services/
