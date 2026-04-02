@@ -122,11 +122,4 @@ Use .streamlit/secrets.toml.example as a template for local secrets and Streamli
 - Extracted PDF text used for organization is in docs/pdf_extracted_pages.txt.
 - This project is intended for academic and educational use.
 
-## Future Improvements
-
-- Replace demo logic with real trained models
-- Add data validation and richer error handling on all pages
-- Add integration tests for key user flows
-- Add authentication and role-based access
-- Add Docker deployment profile for reproducible runtime
 
